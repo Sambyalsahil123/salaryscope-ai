@@ -35,7 +35,7 @@ Docs: http://localhost:8000/docs
 ### 2. Frontend
 
 ```bash
-cd frontend
+# From repo root (where package.json lives)
 npm install
 cp .env.local.example .env.local   # edit NEXT_PUBLIC_API_URL if needed
 npm run dev
@@ -63,8 +63,8 @@ Open http://localhost:3000 → “Estimate My Salary” → fill form → Get Es
 ### Frontend (Vercel)
 
 1. Vercel → New Project → import same GitHub repo.
-2. Root directory: `frontend`.
-3. Environment variable: `NEXT_PUBLIC_API_URL` = your backend URL (e.g. `https://salaryscope-api.onrender.com`).
+2. **Root Directory: leave empty** (Next.js app is at repo root).
+3. Environment variable: `NEXT_PUBLIC_API_URL` = your backend URL (e.g. `https://salaryscope-ai.onrender.com`).
 4. Deploy. Copy the frontend URL (e.g. `https://salaryscope-ai.vercel.app`).
 
 ### CORS
@@ -91,21 +91,17 @@ Redeploy backend after changing.
 ## Project structure
 
 ```
-portfolio-project-1/
-├── frontend/          # Next.js 15 app
+salaryscope-ai/           (repo root = Next.js app)
+├── app/
+│   ├── page.tsx
+│   ├── predict/page.tsx
+│   └── layout.tsx
+├── components/
+├── package.json
+├── next.config.ts
+├── backend/              # FastAPI + ML
 │   ├── app/
-│   │   ├── page.tsx       # Landing
-│   │   ├── predict/page.tsx  # Form + result
-│   │   └── layout.tsx
-│   └── package.json
-├── backend/           # FastAPI + ML
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── routers/ predict, health
-│   │   └── models/ schemas
 │   ├── ml/
-│   │   ├── train.py
-│   │   └── model.pkl (generated)
 │   └── requirements.txt
 └── README.md
 ```

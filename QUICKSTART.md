@@ -16,7 +16,7 @@ Leave this running. API: http://localhost:8000
 ## 2. Frontend (terminal 2)
 
 ```bash
-cd frontend
+# From repo root (same folder as package.json)
 npm install
 npm run dev
 ```
@@ -31,7 +31,6 @@ Open: http://localhost:3000
 
 ## 4. Deploy (when ready)
 
-- Backend → Render or Railway (see README)
-- Frontend → Vercel, set `NEXT_PUBLIC_API_URL` to backend URL
-- Add frontend URL to backend CORS in `app/main.py`
-- Put live link in README and use that link on Upwork / LinkedIn
+- Backend → Render (root: `backend`), see README
+- Frontend → Vercel: **leave Root Directory empty** (Next.js is at repo root)
+- Env: `NEXT_PUBLIC_API_URL` = backend URL
