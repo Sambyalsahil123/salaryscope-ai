@@ -130,6 +130,36 @@ export default function HomePage() {
         <ModelProof />
       </section>
 
+      {/* Why ML, not JS — client-facing proof */}
+      <section className="max-w-3xl mx-auto px-5 py-10">
+        <div className="card-glass rounded-2xl p-6 md:p-8 border-teal-500/20">
+          <h2 className="text-xl font-bold text-slate-100 mb-2">
+            Why this isn&apos;t &quot;just JavaScript&quot;
+          </h2>
+          <p className="text-slate-500 text-sm mb-6">
+            The estimate comes from a trained model on the server — not from rules or formulas in the browser. Here&apos;s what that means:
+          </p>
+          <ul className="space-y-4 text-sm text-slate-400">
+            <li className="flex gap-3">
+              <span className="text-teal-400 shrink-0 font-medium">1.</span>
+              <span><strong className="text-slate-300">No hardcoded formula.</strong> In JS you&apos;d write something like &quot;if Mumbai then +10k&quot;. Here the model learned patterns from data; there&apos;s no single equation we typed — the weights are trained, not written by hand.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-teal-400 shrink-0 font-medium">2.</span>
+              <span><strong className="text-slate-300">Non-linear patterns.</strong> Real salary vs experience isn&apos;t a straight line. The model captures curves and interactions automatically; doing that accurately in JS would mean writing and maintaining many manual rules.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-teal-400 shrink-0 font-medium">3.</span>
+              <span><strong className="text-slate-300">Add more inputs without rewriting logic.</strong> Need 10 or 20 factors (skills, company size, etc.)? With ML we retrain on new data; the same API keeps working. In JS, every new factor means more if/else and harder maintenance.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-teal-400 shrink-0 font-medium">4.</span>
+              <span><strong className="text-slate-300">Calculation happens on the server.</strong> Open DevTools — there&apos;s no salary logic in the frontend. The number is returned by our API, where a Python ML model runs. You can hit the API directly (see &quot;Open API docs&quot; above) and verify.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="max-w-2xl mx-auto px-5 py-12 text-center">
         <div className="card-glass rounded-3xl p-10">

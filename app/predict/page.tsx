@@ -104,6 +104,9 @@ export default function PredictPage() {
           <p className="text-slate-500">
             Fill in your profile — AI will predict your market salary instantly.
           </p>
+          <p className="text-xs text-slate-600 mt-1">
+            Estimate is computed by our ML model on the server, not by rules in the browser.
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
