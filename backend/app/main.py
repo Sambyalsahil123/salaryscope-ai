@@ -64,10 +64,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Allow Next.js frontend on any localhost port (dev) and your prod domain
+# Allow Next.js frontend (local + Vercel production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://your-saas-domain.com"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://salaryscope-ai.vercel.app",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
