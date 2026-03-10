@@ -9,7 +9,9 @@ python ml/train.py
 python -m uvicorn app.main:app --reload
 ```
 
+
 Leave this running. API: http://localhost:8000
+
 
 ## 2. Frontend (terminal 2)
 
