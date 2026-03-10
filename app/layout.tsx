@@ -33,6 +33,12 @@ export default function RootLayout({
                 Home
               </Link>
               <Link
+                href="/bulk"
+                className="text-sm text-slate-400 hover:text-slate-100 transition px-3 py-1.5"
+              >
+                Bulk CSV
+              </Link>
+              <Link
                 href="/predict"
                 className="text-sm font-medium bg-teal-500 hover:bg-teal-400 text-white px-4 py-1.5 rounded-lg transition"
               >
