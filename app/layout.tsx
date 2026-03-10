@@ -50,7 +50,7 @@ export default function RootLayout({
 
         <main className="flex-1 pt-16">{children}</main>
 
-        <footer className="border-t border-white/5 py-8 text-center text-sm text-slate-600">
+        <footer className="relative z-10 border-t border-white/5 bg-slate-950 py-8 text-center text-sm text-slate-600">
           <p>
             SalaryScope AI &mdash; Built with{" "}
             <span className="text-slate-500">Next.js + FastAPI + scikit-learn</span>
