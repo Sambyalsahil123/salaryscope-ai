@@ -1,5 +1,8 @@
 {
-  "mae": 4626.18,
-  "r2": 0.9875,
-  "cv_r2": 0.9842
+  "mae": 226069.34,
+  "mae_lpa": 2.261,
+  "r2": 0.9494,
+  "cv_r2": 0.9394,
+  "training_rows": 1600,
+  "data_source": "Indian IT salary benchmarks 2024 (Naukri/LinkedIn/AmbitionBox)"
 }

@@ -1,9 +1,15 @@
 """
 ML Training Script — Salary Predictor
-Run once to generate model.pkl before starting the API server.
+======================================
+Loads a market-calibrated dataset and trains a GradientBoostingRegressor pipeline.
 
-Usage:
-    python ml/train.py
+Setup (run once):
+    python ml/build_dataset.py   ← generates ml/data/salary_data.csv
+    python ml/train.py           ← trains + saves model.pkl + metrics.json
+
+Data source:
+    ml/data/salary_data.csv — 2000-row dataset calibrated against
+    2024 Indian IT salary benchmarks (Naukri / LinkedIn / AmbitionBox).
 """
 
 import pandas as pd
@@ -19,45 +25,31 @@ import joblib
 import json
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR  = Path(__file__).parent
+DATA_PATH = BASE_DIR / "data" / "salary_data.csv"
 
-# ── Synthetic Dataset (replace with real CSV in production) ──
-np.random.seed(42)
-n = 500
+# ── Load dataset ──────────────────────────────────────────────────────────────
+if not DATA_PATH.exists():
+    raise FileNotFoundError(
+        f"Dataset not found at {DATA_PATH}.\n"
+        "Run `python ml/build_dataset.py` first to generate it."
+    )
 
-experience = np.random.randint(1, 20, n)
-age        = experience + np.random.randint(18, 25, n)
-city       = np.random.choice(["Delhi", "Mumbai", "Bangalore", "Hyderabad"], n)
-education  = np.random.choice(["BTech", "MTech", "MBA", "PhD"], n, p=[0.5, 0.25, 0.15, 0.1])
+df = pd.read_csv(DATA_PATH)
+print(f"Loaded {len(df)} rows from {DATA_PATH.name}")
+print(f"Columns: {list(df.columns)}")
+print(f"Salary range: {df.salary.min():,.0f} – {df.salary.max():,.0f} INR\n")
 
-# Salary formula with noise
-base   = 20000
-salary = (base
-          + experience * 8000
-          + (age - 20) * 500
-          + np.where(city == "Bangalore", 15000, 0)
-          + np.where(education == "MTech", 10000, 0)
-          + np.where(education == "PhD", 20000, 0)
-          + np.random.normal(0, 5000, n))
-
-df = pd.DataFrame({
-    "experience": experience,
-    "age":        age,
-    "city":       city,
-    "education":  education,
-    "salary":     salary.round(2),
-})
-
-X = df.drop("salary", axis=1)
+X = df[["experience", "age", "city", "education"]]
 y = df["salary"]
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# ── Pipeline ─────────────────────────────────────────────────
-numerical_cols    = ["experience", "age"]
-categorical_cols  = ["city", "education"]
+# ── Pipeline ──────────────────────────────────────────────────────────────────
+numerical_cols   = ["experience", "age"]
+categorical_cols = ["city", "education"]
 
 num_pipe = Pipeline([
     ("imputer", SimpleImputer(strategy="median")),
@@ -75,25 +67,59 @@ preprocessor = ColumnTransformer([
 
 pipeline = Pipeline([
     ("preprocessor", preprocessor),
-    ("model", GradientBoostingRegressor(n_estimators=200, random_state=42)),
+    ("model", GradientBoostingRegressor(
+        n_estimators=300,      # more trees → better fit
+        learning_rate=0.08,    # smaller LR + more trees = less overfit
+        max_depth=5,
+        subsample=0.85,        # row sampling (reduces variance)
+        min_samples_leaf=10,
+        random_state=42,
+    )),
 ])
 
-# ── Train ─────────────────────────────────────────────────────
+# ── Train ──────────────────────────────────────────────────────────────────────
+print("Training GradientBoostingRegressor...")
 pipeline.fit(X_train, y_train)
 
-# ── Evaluate ──────────────────────────────────────────────────
+# ── Evaluate ───────────────────────────────────────────────────────────────────
 y_pred = pipeline.predict(X_test)
 mae    = mean_absolute_error(y_test, y_pred)
 r2     = r2_score(y_test, y_pred)
 cv     = cross_val_score(pipeline, X, y, cv=5, scoring="r2").mean()
+mae_lpa = mae / 100_000
 
-metrics = {"mae": round(mae, 2), "r2": round(r2, 4), "cv_r2": round(cv, 4)}
-print(f"MAE: {mae:,.2f}  |  R²: {r2:.4f}  |  CV R²: {cv:.4f}")
+print(f"\nResults:")
+print(f"  MAE:    {mae:>12,.0f} INR  (~{mae_lpa:.2f} LPA)")
+print(f"  R²:     {r2:.4f}  ({r2*100:.1f}% variance explained)")
+print(f"  CV R²:  {cv:.4f}  (5-fold cross-validation)")
 
-# ── Save ──────────────────────────────────────────────────────
+# ── Sample predictions (sanity check) ─────────────────────────────────────────
+samples = pd.DataFrame([
+    {"experience": 2,  "age": 24, "city": "Delhi",     "education": "BTech"},
+    {"experience": 5,  "age": 27, "city": "Bangalore",  "education": "BTech"},
+    {"experience": 8,  "age": 31, "city": "Bangalore",  "education": "MTech"},
+    {"experience": 12, "age": 36, "city": "Mumbai",     "education": "MBA"},
+    {"experience": 15, "age": 40, "city": "Hyderabad",  "education": "PhD"},
+])
+preds = pipeline.predict(samples)
+print("\nSanity check — sample predictions:")
+for _, row in samples.iterrows():
+    pred = preds[_]
+    print(f"  {row.city:<12} {row.education:<6} {int(row.experience):>2}yr  ->  "
+          f"{pred/100_000:>6.1f} LPA  ({pred:>10,.0f} INR)")
+
+# ── Save ────────────────────────────────────────────────────────────────────────
+metrics = {
+    "mae":         round(mae, 2),
+    "mae_lpa":     round(mae_lpa, 3),
+    "r2":          round(r2,  4),
+    "cv_r2":       round(cv,  4),
+    "training_rows": len(X_train),
+    "data_source": "Indian IT salary benchmarks 2024 (Naukri/LinkedIn/AmbitionBox)",
+}
+
 joblib.dump(pipeline, BASE_DIR / "model.pkl")
-
 with open(BASE_DIR / "metrics.json", "w") as f:
     json.dump(metrics, f, indent=2)
 
-print("✅ model.pkl and metrics.json saved to ml/")
+print(f"\nSaved: model.pkl + metrics.json")
