@@ -13,6 +13,11 @@ type Education = (typeof EDUCATION)[number];
 interface PredictResponse {
   predicted_salary: number;
   currency: string;
+  confidence_range: {
+    low: number;
+    high: number;
+    note: string;
+  };
   input_received: {
     experience: number;
     age: number;
@@ -254,6 +259,32 @@ export default function PredictPage() {
                   &#8377;{result.predicted_salary.toLocaleString("en-IN")}
                 </p>
                 <p className="text-slate-600 text-sm mb-2">Indian Rupees (INR)</p>
+
+                {/* Confidence range bar */}
+                {result.confidence_range && (
+                  <div className="mt-4 mb-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
+                      Market Range (±20%)
+                    </p>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm font-medium text-slate-400">
+                        &#8377;{result.confidence_range.low.toLocaleString("en-IN")}
+                      </span>
+                      <span className="text-xs text-teal-400 font-semibold px-2 py-0.5 bg-teal-500/10 rounded-full">
+                        Predicted
+                      </span>
+                      <span className="text-sm font-medium text-slate-400">
+                        &#8377;{result.confidence_range.high.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    {/* visual bar */}
+                    <div className="relative h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-slate-600 via-teal-500 to-slate-600 rounded-full" />
+                    </div>
+                    <p className="text-xs text-slate-600 mt-1.5">{result.confidence_range.note}</p>
+                  </div>
+                )}
+
                 <a
                   href={`${API_BASE}/docs`}
                   target="_blank"
@@ -265,7 +296,7 @@ export default function PredictPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                 </a>
-                <div className="mb-8" />
+                <div className="mb-6" />
 
                 <div className="border-t border-white/5 pt-6 space-y-3">
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">

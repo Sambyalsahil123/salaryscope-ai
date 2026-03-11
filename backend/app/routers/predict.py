@@ -14,7 +14,7 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File
 from fastapi.responses import StreamingResponse
 
-from app.models.schemas import PredictRequest, PredictResponse
+from app.models.schemas import PredictRequest, PredictResponse, ConfidenceRange
 
 router = APIRouter(prefix="/predict", tags=["Prediction"])
 
@@ -46,8 +46,13 @@ def predict_salary(payload: PredictRequest, request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {e}")
 
+    # ±20% market variance — same profile differs across companies/skills/negotiation
     return PredictResponse(
         predicted_salary=salary,
+        confidence_range=ConfidenceRange(
+            low=round(salary * 0.80, 2),
+            high=round(salary * 1.20, 2),
+        ),
         input_received=payload,
     )
 

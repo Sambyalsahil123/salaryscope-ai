@@ -86,7 +86,7 @@ CITY_MULT = {
 # Education premium (real market premiums for Indian IT 2024)
 # MBA matters more at 8+ years (leadership roles); PhD niche but premium
 EDU_MULT = {
-    "BTech": 1.000,
+    "BTech": 1.000,   # BTech is the most common education in India
     "MTech": 1.175,   # ~17.5% premium on average
     "MBA":   1.220,   # ~22% premium (product/management track)
     "PhD":   1.300,   # ~30% premium (research/ML scientist roles)

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
+import KeepAlive from "@/components/KeepAlive";
 
 export const metadata: Metadata = {
   title: "SalaryScope AI | AI-Powered Salary Predictor",
@@ -48,6 +49,7 @@ export default function RootLayout({
           </div>
         </header>
 
+        <KeepAlive />
         <main className="flex-1 pt-16">{children}</main>
 
         <footer className="relative z-10 border-t border-white/5 bg-slate-950 py-8 text-center text-sm text-slate-600">

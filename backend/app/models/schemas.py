@@ -29,10 +29,17 @@ class PredictRequest(BaseModel):
     }
 
 
+class ConfidenceRange(BaseModel):
+    low:  float
+    high: float
+    note: str = "±20% market variance (same profile, different companies/skills/negotiation)"
+
+
 class PredictResponse(BaseModel):
-    predicted_salary: float
-    currency:         str = "INR"
-    input_received:   PredictRequest
+    predicted_salary:   float
+    currency:           str = "INR"
+    confidence_range:   ConfidenceRange
+    input_received:     PredictRequest
 
 
 class HealthResponse(BaseModel):
